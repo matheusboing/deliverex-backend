@@ -11,7 +11,7 @@ export default class ItensController extends BaseController {
   async get({ request, response }) {
     const item = await ItensService.getById(request.params().id);
     if (!item) {
-      return response.status(404).send('Este item não existe');
+      return this.notFoundResponse(response, "Item não encontrado.");
     }
 
     return item;
