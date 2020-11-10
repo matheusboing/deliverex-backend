@@ -3,79 +3,87 @@ import Item from 'App/Models/Item';
 import Pedido from 'App/Models/Pedido';
 
 class PedidosService {
-  public async getAll() {
-    return await Pedido.all();
+  public async obterTodos(carregarItens: string) {
+    if (carregarItens && carregarItens === 'true') {
+      return await Pedido.query().preload('itens');
+    }
+  public async obterPorId(id: number, carregarItens: string): Promise<Pedido | null> {
+    const pedido = await Pedido.find(id);
+
+    if (!pedido) {
+      return null;
+    }
+    if (carregarItens && carregarItens === 'true') {
+      await pedido.preload('itens');
+  public async criar(novoPedido) {
+    for (let itemPedido of novoPedido.itens) {
+      const item = await Item.findBy('codigo', itemPedido.codigo);
+
+    }
+
+    return pedido;
   }
 
-  public async getById(id: number): Promise<Pedido | null> {
-    return await Pedido.find(id);
-  }
 
-  public async create(pedidoDto) {
+    pedido.descricao = novoPedido.descricao;
     for (let itemDto of pedidoDto.itens) {
       const item = await Item.find(itemDto.id);
 
+
       if (!item) {
         return null;
-      }
-    }
+      for (let itemPedido of novoPedido.itens) {
+        const item = await Item.findBy('codigo', itemPedido.codigo);
     const pedido = new Pedido();
     pedido.descricao = pedidoDto.descricao;
     pedido.situacao = PedidoSituacao.EmAnalise;
-    await pedido.save();
-    try {
-      pedido.related('itens').detach();
-
+            [item.id]: {
+              quantidade: itemPedido.quantidade,
+              desconto: itemPedido.desconto,
+              valor_total: item.preco * itemPedido.quantidade - itemPedido.desconto,
       for (let itemDto of pedidoDto.itens) {
         const item = await Item.find(itemDto.id);
-
-        if (item) {
-          await pedido.related('itens').attach({
-            [itemDto.id]: {
               quantidade: itemDto.quantidade,
               desconto: itemDto.desconto,
               valor_total: item.preco * itemDto.quantidade - itemDto.desconto,
+      await pedido.related('itens').detach();
             },
           });
         } else {
           await pedido.related('itens').detach();
-          await pedido.delete();
+  public async atualizar(id: number, pedidoEditado) {
           return null;
         }
       }
     } catch (error) {
       await pedido.delete();
       throw error;
-    }
-
+    for (let itemPedido of pedidoEditado.itens) {
+      const item = await Item.findBy('codigo', itemPedido.codigo);
     return pedido;
   }
 
   public async update(id, pedidoDto) {
     const pedido = await Pedido.find(id);
 
-    if (!pedido) {
+    pedido.descricao = pedidoEditado.descricao;
       return null;
     }
-
-    for (let itemDto of pedidoDto.itens) {
+    pedido.related('itens').detach();
       const item = await Item.find(itemDto.id);
-
-      if (!item) {
+    for (let itemPedido of pedidoEditado.itens) {
+      const item = await Item.findBy('codigo', itemPedido.codigo);
         return null;
+      if (item) {
+        await pedido.related('itens').attach({
+          [item.id]: {
+            quantidade: itemPedido.quantidade,
+            desconto: itemPedido.desconto,
+            valor_total: item.preco * itemPedido.quantidade - itemPedido.desconto,
+          },
+        });
       }
     }
-
-    pedido.descricao = pedidoDto.descricao;
-    await pedido.save();
-
-    try {
-      pedido.related('itens').detach();
-
-      for (let itemDto of pedidoDto.itens) {
-        const item = await Item.find(itemDto.id);
-
-        if (item) {
           await pedido.related('itens').attach({
             [itemDto.id]: {
               quantidade: itemDto.quantidade,
@@ -83,17 +91,18 @@ class PedidosService {
               valor_total: item.preco * itemDto.quantidade - itemDto.desconto,
             },
           });
-        }
+  public async atualizarSituacao(id: number, situacao: PedidoSituacao) {
       }
+
     } catch (error) {
       throw error;
     }
 
-    return pedido;
+    pedido.situacao = situacao;
   }
   public async updateStatus(id, status) {
     const pedido = await Pedido.find(id);
-    if (!pedido) {
+  public async deletar(id: number) {
       return null;
     }
 
@@ -101,7 +110,6 @@ class PedidosService {
     await pedido.save();
     return pedido;
   }
-
   public async delete(id) {
     const pedido = await Pedido.find(id);
 

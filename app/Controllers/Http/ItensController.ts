@@ -5,13 +5,13 @@ import BaseController from './BaseController';
 
 export default class ItensController extends BaseController {
   async getAll() {
-    return await ItensService.getAll();
+    return await ItensService.obterTodos();
   }
 
   async get({ request, response }) {
-    const item = await ItensService.getById(request.params().id);
+    const item = await ItensService.obterPeloId(request.params().id);
     if (!item) {
-      return this.notFoundResponse(response, "Item não encontrado.");
+      return this.notFound(response, "Item não encontrado.");
     }
 
     return item;
@@ -29,12 +29,12 @@ export default class ItensController extends BaseController {
         schema: postSchema,
       });
     } catch (error) {
-      return this.unprocessableEntityResponse(response, 'A requisição não é válida', error.message);
+      return this.unprocessableEntity(response, 'A requisição não é válida', error.messages);
     }
 
-    const item = await ItensService.create(request.post());
+    const item = await ItensService.criar(request.post());
     if (!item) {
-      return this.conflictResponse(response, 'Este item já existe.');
+      return this.conflict(response, 'Este item já existe.');
     }
 
     return item;
@@ -53,33 +53,33 @@ export default class ItensController extends BaseController {
         schema: postSchema,
       });
     } catch (error) {
-      return this.unprocessableEntityResponse(response, 'A requisição não é válida', error.message);
+      return this.unprocessableEntity(response, 'A requisição não é válida', error.message);
     }
 
-    const item = await ItensService.update(request.params().id, request.post());
+    const item = await ItensService.atualizar(request.params().id, request.post());
 
     if (request.post().id != request.params().id) {
-      return this.badRequestResponse(
+      return this.badRequest(
         response,
         'O ID da URL é diferente do ID do corpo da requisição.'
       );
     }
 
     if (!item) {
-      return this.conflictResponse(response, 'Esse item já existe.');
+      return this.notFound(response, 'Esse item não existe.');
     }
 
     return item;
   }
 
   async delete({ params, response }) {
-    const item = await ItensService.getById(params.id);
+    const item = await ItensService.obterPeloId(params.id);
 
     if (!item) {
-      return this.notFoundResponse(response, 'Esse item não existe.');
+      return this.notFound(response, 'Esse item não existe.');
     }
 
-    await ItensService.delete(item.id);
-    return this.noContentResponse(response);
+    await ItensService.deletar(item.id);
+    return this.noContent(response);
   }
 }

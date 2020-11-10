@@ -1,48 +1,48 @@
 import Item from 'App/Models/Item';
 
 class ItensService {
-  public async getAll() {
+  public async obterTodos() {
     return await Item.all();
   }
 
-  public async getById(id: string) {
+  public async obterPeloId(id: string) {
     return await Item.find(id);
   }
 
-  public async create(itemDto) {
+  public async criar(novoItem) {
     const item = new Item();
-    if (await Item.findBy('codigo', itemDto.codigo)) {
+    if (await Item.findBy('codigo', novoItem.codigo)) {
       return null;
     }
 
-    item.codigo = itemDto.codigo;
-    item.descricao = itemDto.descricao;
-    item.preco = itemDto.preco;
+    item.codigo = novoItem.codigo;
+    item.descricao = novoItem.descricao;
+    item.preco = novoItem.preco;
 
     return await item.save();
   }
 
-  public async update(id, itemDto) {
+  public async atualizar(id, itemAtualizado) {
     const item = await Item.find(id);
     if (!item) {
       return null;
     }
 
-    item.codigo = itemDto.codigo;
-    item.descricao = itemDto.descricao;
-    item.preco = itemDto.preco;
+    item.codigo = itemAtualizado.codigo;
+    item.descricao = itemAtualizado.descricao;
+    item.preco = itemAtualizado.preco;
 
     return await item.save();
   }
 
-  public async delete(id) {
+  public async deletar(id) {
     const item = await Item.find(id);
 
     if (!item) {
       return null;
     }
 
-    return item.delete();
+    await item.delete();
   }
 }
 
