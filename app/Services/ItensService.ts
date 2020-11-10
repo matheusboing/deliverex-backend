@@ -1,14 +1,27 @@
 import Item from 'App/Models/Item';
 
 class ItensService {
+
+  /**
+   * Retorna todos os itens do banco
+   */
   public async obterTodos() {
     return await Item.all();
   }
 
+  /**
+   * Retorna o item do ID informado
+   * @param id ID do item 
+   */
   public async obterPeloId(id: string) {
     return await Item.find(id);
   }
 
+  /**
+   * Cria um item
+   * @param novoItem item a ser criado
+   * @return null, caso um item com o mesmo código já exista 
+   */
   public async criar(novoItem) {
     const item = new Item();
     if (await Item.findBy('codigo', novoItem.codigo)) {
@@ -22,6 +35,10 @@ class ItensService {
     return await item.save();
   }
 
+  /**
+   * Atualiza um item
+   * @returns null, caso o item não exista
+   */
   public async atualizar(id, itemAtualizado) {
     const item = await Item.find(id);
     if (!item) {
@@ -35,6 +52,11 @@ class ItensService {
     return await item.save();
   }
 
+  /**
+   * Deleta um item 
+   * @param id ID do item
+   * @returns null, caso o item não exista
+   */
   public async deletar(id) {
     const item = await Item.find(id);
 

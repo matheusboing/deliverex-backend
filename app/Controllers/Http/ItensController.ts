@@ -4,10 +4,19 @@ import { schema } from '@ioc:Adonis/Core/Validator';
 import BaseController from './BaseController';
 
 export default class ItensController extends BaseController {
+  /**
+   * Retorna todos os itens do banco de dados
+   * @returns lista de itens
+   */
   async getAll() {
     return await ItensService.obterTodos();
   }
 
+  /**
+   * Retorna um item pelo ID 
+   * @returns 404, caso o item não exista
+   * @returns o item requisitado
+   */
   async get({ request, response }) {
     const item = await ItensService.obterPeloId(request.params().id);
     if (!item) {
@@ -17,6 +26,12 @@ export default class ItensController extends BaseController {
     return item;
   }
 
+  /**
+   * Cria um item
+   * @returns 422, caso a requisição seja inválida
+   * @returns 409, caso um item com o mesmo código já exista
+   * @returns o item criado
+   */
   async post({ request, response }: HttpContextContract) {
     const postSchema = schema.create({
       codigo: schema.number(),
@@ -40,6 +55,14 @@ export default class ItensController extends BaseController {
     return item;
   }
 
+  /**
+   * Edita um item
+   * @returns 422, caso a requisição seja inválida
+   * @returns 404, caso o pedido não exista
+   * @returns 400, caso o ID da URL seja diferente do ID do corpo da requisição
+   * @returns 409, caso um item com o mesmo código já exista
+   * @returns o item editado
+   */
   async put({ response, request }: HttpContextContract) {
     const postSchema = schema.create({
       id: schema.number(),
@@ -72,6 +95,11 @@ export default class ItensController extends BaseController {
     return item;
   }
 
+  /**
+   * Deleta um item
+   * @returns 404, caso o item não exista
+   * @returns 204, caso o item seja deletado
+   */
   async delete({ params, response }) {
     const item = await ItensService.obterPeloId(params.id);
 
