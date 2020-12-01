@@ -29,7 +29,7 @@ class PedidosService {
             id: item.id,
             codigo: item.codigo,
             descricao: item.descricao,
-            preco: item.preco,
+            preco: item.$extras.pivot_preco_unitario,
             criadoEm: item.criadoEm.toJSDate(),
             atualizadoEm: item.atualizadoEm.toJSDate(),
             quantidade: item.$extras.pivot_quantidade,
@@ -76,7 +76,7 @@ class PedidosService {
           id: item.id,
           codigo: item.codigo,
           descricao: item.descricao,
-          preco: item.preco,
+          preco: item.$extras.pivot_preco_unitario,
           criadoEm: item.criadoEm.toJSDate(),
           atualizadoEm: item.atualizadoEm.toJSDate(),
           quantidade: item.$extras.pivot_quantidade,
@@ -117,6 +117,7 @@ class PedidosService {
         if (item) {
           await pedido.related('itens').attach({
             [item.id]: {
+              preco_unitario: item.preco,
               quantidade: itemPedido.quantidade,
               desconto: itemPedido.desconto,
               valor_total: item.preco * itemPedido.quantidade - itemPedido.desconto,
@@ -154,6 +155,11 @@ class PedidosService {
 
     pedido.descricao = pedidoEditado.descricao;
     await pedido.save();
+    await pedido.preload("itens");
+
+    const itensExistentes = pedido.itens.map(item => {
+      return {codigo: item.codigo, preco: item.$extras.pivot_preco_unitario}
+    })
 
     pedido.related('itens').detach();
 
@@ -161,8 +167,15 @@ class PedidosService {
       const item = await Item.findBy('codigo', itemPedido.codigo);
 
       if (item) {
+        const itemExistente = itensExistentes.find(i => i.codigo == item.codigo);
+
+        if (itemExistente) {
+          item.preco = itemExistente.preco;
+        }
+
         await pedido.related('itens').attach({
           [item.id]: {
+            preco_unitario: item.preco, 
             quantidade: itemPedido.quantidade,
             desconto: itemPedido.desconto,
             valor_total: item.preco * itemPedido.quantidade - itemPedido.desconto,

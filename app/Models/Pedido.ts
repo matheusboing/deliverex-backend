@@ -25,7 +25,7 @@ export default class Pedido extends BaseModel {
     relatedKey: 'id',
     pivotRelatedForeignKey: 'item_id',
     pivotTable: 'itens_pedidos',
-    pivotColumns: ['quantidade', 'desconto', 'valor_total'],
+    pivotColumns: ['preco_unitario', 'quantidade', 'desconto', 'valor_total'],
   })
   public itens: ManyToMany<typeof Item>;
 }
