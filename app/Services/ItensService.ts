@@ -17,6 +17,10 @@ class ItensService {
     return await Item.find(id);
   }
 
+  public async obterPeloCodigo(codigo: number) {
+    return await Item.findBy("codigo", codigo);
+  }
+
   /**
    * Cria um item
    * @param novoItem item a ser criado
@@ -59,12 +63,14 @@ class ItensService {
    */
   public async deletar(id) {
     const item = await Item.find(id);
+    const pedido = await (await Pedido.query().preload("itens")).find(p => p.itens.find(i => i.id == id))
 
-    if (!item) {
-      return null;
+    if (!item || pedido) {
+      return false;
     }
 
     await item.delete();
+    return true;
   }
 }
 

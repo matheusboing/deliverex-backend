@@ -5,6 +5,7 @@ import Route from '@ioc:Adonis/Core/Route';
  */
 Route.group(() => {
   Route.get(':id', 'ItensController.get');
+  Route.get('/codigo/:codigo', 'ItensController.getByCodigo');
   Route.post('/', 'ItensController.post');
   Route.get('/', 'ItensController.getAll');
   Route.put(':id', 'ItensController.put');

@@ -12,6 +12,15 @@ export default class ItensController extends BaseController {
     return await ItensService.obterTodos();
   }
 
+  async getByCodigo({request, response}) {
+    const item = await ItensService.obterPeloCodigo(request.params().codigo);
+    if(!item) {
+      return this.notFound(response, "Item não encontrado.")
+    }
+
+    return item;
+  }
+
   /**
    * Retorna um item pelo ID 
    * @returns 404, caso o item não exista
@@ -107,7 +116,11 @@ export default class ItensController extends BaseController {
       return this.notFound(response, 'Esse item não existe.');
     }
 
-    await ItensService.deletar(item.id);
+    const isDeleted = await ItensService.deletar(item.id);
+
+    if(!isDeleted) {
+      return this.conflict(response, "Existem pedidos com esse item.");
+    }
     return this.noContent(response);
   }
 }
