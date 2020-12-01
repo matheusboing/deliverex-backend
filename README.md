@@ -20,6 +20,7 @@ Além disto é bom ter um editor para trabalhar com o código como [VSCode](http
 
 #### Defina as variáveis de ambiente:
 :point_right: Copie e cole o arquivo `.env.example` no mesmo diretório\
+:point_right: Retire o sufixo do nome do arquivo e deixe como `.env`\
 :point_right: Defina os valores das variáveis que estão no arquivo
 
 |Variável|Descrição|
