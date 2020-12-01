@@ -5,17 +5,16 @@ import BaseController from './BaseController';
 import { PedidoSituacao } from 'App/Enums/PedidoSituacaoEnum';
 
 export default class PedidoController extends BaseController {
-
   /**
    * Retorna todos os pedidos do banco de dados
    * @returns lista de pedidos
    */
-  async getAll({request}) {
+  async getAll({ request }) {
     return await PedidosService.obterTodos(request.requestData.carregarItens);
   }
 
   /**
-   * Retorna um pedido pelo ID 
+   * Retorna um pedido pelo ID
    * @returns 404, caso o pedido não exista
    * @returns o pedido requisitado
    */
@@ -31,9 +30,9 @@ export default class PedidoController extends BaseController {
 
   /**
    * Cria um pedido
-   * @returns 422, caso a requisição seja inválida, 
+   * @returns 422, caso a requisição seja inválida,
    * ou não tenha itens, ou existam itens duplicados
-   * ou algum item não tenha sido encontrado 
+   * ou algum item não tenha sido encontrado
    * @returns o pedido criado
    */
   async post({ request, response }: HttpContextContract) {
@@ -80,11 +79,11 @@ export default class PedidoController extends BaseController {
     return pedido;
   }
 
-    /**
+  /**
    * Edita um pedido
-   *@returns 422, caso a requisição seja inválida, 
+   *@returns 422, caso a requisição seja inválida,
    * ou não tenha itens, ou existam itens duplicados
-   * ou algum item não tenha sido encontrado 
+   * ou algum item não tenha sido encontrado
    * @returns 404, caso o pedido não exista
    * @returns 400, caso o ID da URL seja diferente do ID do corpo da requisição
    * @returns 409, caso um pedido com o mesmo código já exista
@@ -148,7 +147,7 @@ export default class PedidoController extends BaseController {
 
   /**
    * Altera o situação de um pedido
-   * @returns 422, caso a rquisição não for válida, 
+   * @returns 422, caso a rquisição não for válida,
    * ou caso situação informada não existe
    * @returns 400, caso o ID da URL for diferente do ID do corpo da requisição
    * @returns 404, caso o pedido não exista

@@ -5,7 +5,7 @@ import Item from 'App/Models/Item';
 import Pedido from 'App/Models/Pedido';
 
 class PedidosService {
-    /**
+  /**
    * Retorna todos os pedidos do banco
    */
   public async obterTodos(carregarItens: string) {
@@ -47,9 +47,9 @@ class PedidosService {
     return await Pedido.all();
   }
 
-    /**
+  /**
    * Retorna o pedido do ID informado
-   * @param id ID do pedido 
+   * @param id ID do pedido
    * @param carregarItens Indica se deve retornar os itens do pedido
    */
   public async obterPorId(id: number, carregarItens: string): Promise<PedidoDto | null> {
@@ -58,6 +58,7 @@ class PedidosService {
     if (!pedido) {
       return null;
     }
+
     const pedidoDto: PedidoDto = new PedidoDto({
       id: pedido.id,
       descricao: pedido.descricao,
@@ -66,6 +67,7 @@ class PedidosService {
       atualizadoEm: pedido.atualizadoEm.toJSDate(),
       valorTotal: 0
     });
+
     if (carregarItens && carregarItens === 'true') {
       await pedido.preload('itens');
       pedidoDto.itens = pedido.itens.map((item) => {
@@ -84,10 +86,10 @@ class PedidosService {
       });
     }
 
-    return pedido;
+    return pedidoDto;
   }
 
-   /**
+  /**
    * Cria um pedido
    * @param novoPedido pedido a ser criado
    * @return null, caso um item do pedido não exista
@@ -174,7 +176,7 @@ class PedidosService {
 
   /**
    * Atualiza a situação do pedido
-   * @param id ID do pedido 
+   * @param id ID do pedido
    * @param situacao Situação do pedido
    * @returns o pedido atualizado
    */
@@ -191,7 +193,7 @@ class PedidosService {
   }
 
   /**
-   * Deleta um pedido 
+   * Deleta um pedido
    * @param id ID do pedido
    * @returns null, caso o pedido não exista
    */

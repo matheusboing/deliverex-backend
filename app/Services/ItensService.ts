@@ -1,4 +1,5 @@
 import Item from 'App/Models/Item';
+import Pedido from 'App/Models/Pedido';
 
 class ItensService {
 
@@ -17,6 +18,10 @@ class ItensService {
     return await Item.find(id);
   }
 
+   /**
+   * Retorna o item do código informado
+   * @param codigo código do item 
+   */
   public async obterPeloCodigo(codigo: number) {
     return await Item.findBy("codigo", codigo);
   }
@@ -70,6 +75,7 @@ class ItensService {
     }
 
     await item.delete();
+
     return true;
   }
 }
