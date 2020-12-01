@@ -125,7 +125,10 @@ export default class PedidoController extends BaseController {
       ultimoCodigo = item.codigo;
     }
 
-    let pedido = await PedidosService.obterPorId(request.params().id, request.requestData.carregarItens);
+    let pedido = await PedidosService.obterPorId(
+      request.params().id,
+      request.requestData.carregarItens
+    );
 
     if (!pedido) {
       return this.notFound(response, 'Esse pedido não existe.');
@@ -133,10 +136,7 @@ export default class PedidoController extends BaseController {
     pedido = await PedidosService.atualizar(request.params().id, request.post());
 
     if (request.post().id != request.params().id) {
-      return this.badRequest(
-        response,
-        'O ID da URL é diferente do ID do corpo da requisição.'
-      );
+      return this.badRequest(response, 'O ID da URL é diferente do ID do corpo da requisição.');
     }
 
     if (!pedido) {
@@ -156,7 +156,7 @@ export default class PedidoController extends BaseController {
   async patch({ params, request, response }) {
     const postSchema = schema.create({
       id: schema.number(),
-      situacao: schema.number(),
+      situacao: schema.enum(Object.entries(PedidoSituacao).map(([key, _]) => key)),
     });
     try {
       await request.validate({
@@ -171,10 +171,7 @@ export default class PedidoController extends BaseController {
     }
 
     if (request.post().id != request.params().id) {
-      return this.badRequest(
-        response,
-        'O ID da URL é diferente do ID do corpo da requisição.'
-      );
+      return this.badRequest(response, 'O ID da URL é diferente do ID do corpo da requisição.');
     }
     let pedido = await PedidosService.obterPorId(params.id, request.requestData.carregarItens);
 

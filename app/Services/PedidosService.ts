@@ -1,3 +1,5 @@
+import ItemDto from 'App/Dtos/ItemDto';
+import PedidoDto from 'App/Dtos/PedidoDto';
 import { PedidoSituacao } from 'App/Enums/PedidoSituacaoEnum';
 import Item from 'App/Models/Item';
 import Pedido from 'App/Models/Pedido';
@@ -8,7 +10,38 @@ class PedidosService {
    */
   public async obterTodos(carregarItens: string) {
     if (carregarItens && carregarItens === 'true') {
-      return await Pedido.query().preload('itens');
+      const pedidos = await Pedido.query().preload('itens');
+      const pedidosDto: PedidoDto[] = [];
+
+      for(let pedido of pedidos) {
+        const pedidoDto: PedidoDto = new PedidoDto({
+          id: pedido.id,
+          descricao: pedido.descricao,
+          situacao: pedido.situacao,
+          criadoEm: pedido.criadoEm.toJSDate(),
+          atualizadoEm: pedido.atualizadoEm.toJSDate(),
+          valorTotal: 0
+        });
+
+        pedidoDto.itens = pedido.itens.map((item) => {
+          pedidoDto.valorTotal += item.$extras.pivot_valor_total;
+          return new ItemDto({
+            id: item.id,
+            codigo: item.codigo,
+            descricao: item.descricao,
+            preco: item.preco,
+            criadoEm: item.criadoEm.toJSDate(),
+            atualizadoEm: item.atualizadoEm.toJSDate(),
+            quantidade: item.$extras.pivot_quantidade,
+            desconto: item.$extras.pivot_desconto,
+            valorTotal: item.$extras.pivot_valor_total,
+          });
+        });
+
+        pedidosDto.push(pedidoDto);
+      }
+
+      return pedidosDto;
     }
 
     return await Pedido.all();
@@ -19,14 +52,36 @@ class PedidosService {
    * @param id ID do pedido 
    * @param carregarItens Indica se deve retornar os itens do pedido
    */
-  public async obterPorId(id: number, carregarItens: string): Promise<Pedido | null> {
+  public async obterPorId(id: number, carregarItens: string): Promise<PedidoDto | null> {
     const pedido = await Pedido.find(id);
 
     if (!pedido) {
       return null;
     }
+    const pedidoDto: PedidoDto = new PedidoDto({
+      id: pedido.id,
+      descricao: pedido.descricao,
+      situacao: pedido.situacao,
+      criadoEm: pedido.criadoEm.toJSDate(),
+      atualizadoEm: pedido.atualizadoEm.toJSDate(),
+      valorTotal: 0
+    });
     if (carregarItens && carregarItens === 'true') {
       await pedido.preload('itens');
+      pedidoDto.itens = pedido.itens.map((item) => {
+        pedidoDto.valorTotal += item.$extras.pivot_valor_total;
+        return new ItemDto({
+          id: item.id,
+          codigo: item.codigo,
+          descricao: item.descricao,
+          preco: item.preco,
+          criadoEm: item.criadoEm.toJSDate(),
+          atualizadoEm: item.atualizadoEm.toJSDate(),
+          quantidade: item.$extras.pivot_quantidade,
+          desconto: item.$extras.pivot_desconto,
+          valorTotal: item.$extras.pivot_valor_total,
+        });
+      });
     }
 
     return pedido;
